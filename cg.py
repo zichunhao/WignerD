@@ -8,7 +8,9 @@ def cg_coefficient(
 ):
     '''
     Compute the Clebsch-Gordan coefficient :math:`\langle j_1, j_2; m_1, m_2 | j_1 j_2; j m \rangle`.
-    Reference: Section 3.8 of J. J. Sakurai and Jim Napolitano, "Quantum Mechanics", 2nd ed., Cambridge, 2017
+    References: 
+        - Section 3.8 of J. J. Sakurai and Jim Napolitano, "Quantum Mechanics", 2nd ed., Cambridge, 2017
+        - https://en.wikipedia.org/wiki/Table_of_Clebsch–Gordan_coefficients
     '''
     
     if m != m1 + m2:
