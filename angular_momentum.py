@@ -1,13 +1,14 @@
 import numpy as np
 import math
 
+
 def J_x(j):
     return (J_plus(j) + J_minus(j)) / 2
 
 def J_y(j):
     return (J_plus(j) - J_minus(j)) / 2j
 
-def J_z(j, separate=False):
+def J_z(j):
     return np.identity(int(2 * j + 1))
 
 
@@ -22,7 +23,10 @@ def Jz(j):
 
 
 def J_plus(j):
-    dim = 2 * j + 1
+    if int(2 * j + 1) != 2 * j + 1:
+        raise ValueError(f'j must be a half integer. Found: {j}')
+    
+    dim = int(2 * j + 1)
 
     mat = np.zeros((dim, dim))
 
@@ -36,7 +40,10 @@ def J_plus(j):
     return mat
 
 def J_minus(j):
-    dim = 2 * j + 1
+    if int(2 * j + 1) != 2 * j + 1:
+        raise ValueError(f'j must be a half integer. Found: {j}')
+    
+    dim = int(2 * j + 1)
 
     mat = np.zeros((dim, dim))
 
