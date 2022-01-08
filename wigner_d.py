@@ -13,7 +13,8 @@ class WignerD:
         self.__beta = beta
         self.__gamma = gamma
         self.__d = wigner_d_dict(jmax, beta)
-        self.__D = wigner_D_dict(jmax, alpha, beta, gamma)
+        # self.__D = wigner_D_dict(jmax, alpha, beta, gamma)
+        self.__D = wigner_D_dict_from_d_dict(self.__d, alpha, gamma)
 
     def wigner_D(self, j):
         try:
@@ -34,11 +35,12 @@ class WignerD:
             return
         
         jmin = max(self.__d.keys())
+        wigner_d_new = wigner_d_dict(jmax, self.__beta, jmin=jmin)
         self.__d.update(
-            wigner_d_dict(jmax, self.__beta, jmin=jmin)
+            wigner_d_new
         )
         self.__D.update(
-            wigner_D_dict(jmax, self.__alpha, self.__beta, self.__gamma, jmin=jmin)
+            wigner_D_dict_from_d_dict(wigner_d_new, self.__alpha, self.__gamma)
         )
         
         self.__jmax = jmax
@@ -61,7 +63,7 @@ class WignerD:
         return
     
     def __getitem__(self, j):
-        return self.wigner_d(j)
+        return (self.wigner_d(j), self.wigner_D(j))
 
     def __repr__(self) -> str:
         return f'WignerDDict(jmax={self.__jmax}, alpha={self.__alpha}, beta={self.__beta}, gamma={self.__gamma})'
@@ -125,6 +127,34 @@ def wigner_D(j, alpha, beta, gamma):
     return mat
 
 
+def wigner_D_from_d(wigner_d, alpha, gamma):
+    '''Get the Wigner D matrix from the Wigner little d matrix'''
+    dim = wigner_d.shape[0]
+    mat = np.zeros((dim, dim), dtype='complex_')
+
+    m_range = np.linspace(-int((dim-1) / 2), int((dim-1) / 2), dim)
+
+    for row, m_prime in enumerate(m_range):
+        for col, m in enumerate(m_range):
+            mat[row,col] = np.exp(-1j * (m_prime * alpha + m * gamma)) * wigner_d[row,col]
+
+    return mat
+
+
+def wigner_d_from_D(wigner_D, alpha, gamma):
+    '''Get the Wigner little d matrix from the Wigner D matrix'''
+    dim = wigner_D.shape[0]
+    mat = np.zeros((dim, dim), dtype='complex_')
+
+    m_range = np.linspace(-int((dim-1) / 2), int((dim-1) / 2), dim)
+
+    for row, m_prime in enumerate(m_range):
+        for col, m in enumerate(m_range):
+            mat[row, col] = np.exp(1j * (m_prime *alpha + m * gamma)) * wigner_D[row, col]
+
+    return mat
+
+
 def wigner_d_dict(jmax, beta, jmin=0):
     res = dict()
     jmin = max(jmin, 0)
@@ -140,6 +170,22 @@ def wigner_D_dict(jmax, alpha, beta, gamma, jmin=0):
 
     for j in range(int(2 * jmin), int(2 * jmax + 1)):
         res[j / 2] = wigner_D(j / 2, alpha, beta, gamma)
+    return res
+
+
+def wigner_D_dict_from_d_dict(wigner_d_dict, alpha, gamma):
+    '''Get a dictionary of wigner D matrices from a dictionary of wigner d matrices'''
+    res = dict()
+    for j in wigner_d_dict.keys():
+        res[j] = wigner_D_from_d(wigner_d_dict[j], alpha, gamma)
+    return res
+
+
+def wigner_d_dict_from_D_dict(wigner_D_dict, alpha, gamma):
+    '''Get a dictionary of wigner D matrices from a dictionary of wigner d matrices'''
+    res = dict()
+    for j in wigner_D_dict.keys():
+        res[j] = wigner_d_from_D(wigner_D_dict[j], alpha, gamma)
     return res
 
 
