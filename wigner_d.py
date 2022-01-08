@@ -1,6 +1,6 @@
 import numpy as np
 import math
-
+from typing import Tuple, Dict
 class WignerD:
     def __init__(self, jmax, alpha, beta, gamma):
         '''
@@ -16,14 +16,14 @@ class WignerD:
         # self.__D = wigner_D_dict(jmax, alpha, beta, gamma)
         self.__D = wigner_D_dict_from_d_dict(self.__d, alpha, gamma)
 
-    def wigner_D(self, j):
+    def wigner_D(self, j) -> np.ndarray:
         try:
             return self.__D[j]
         except KeyError:
             self.set_jmax(j)
             return self.__D[j]
 
-    def wigner_d(self, j):
+    def wigner_d(self, j) -> np.ndarray:
         try:
             return self.__d[j]
         except KeyError:
@@ -62,7 +62,7 @@ class WignerD:
         self.__gamma = gamma
         return
     
-    def __getitem__(self, j):
+    def __getitem__(self, j) -> Tuple[np.ndarray, np.ndarray]:
         return (self.wigner_d(j), self.wigner_D(j))
 
     def __repr__(self) -> str:
@@ -72,31 +72,31 @@ class WignerD:
         return self.__repr__()
     
     @property
-    def jmax(self):
+    def jmax(self) -> float:
         return self.__jmax
     
     @property
-    def alpha(self):
+    def alpha(self) -> float:
         return self.__alpha
     
     @property
-    def beta(self):
+    def beta(self) -> float:
         return self.__beta
     
     @property
-    def gamma(self):
+    def gamma(self) -> float:
         return self.__gamma
     
     @property
-    def d(self):
+    def d(self) -> Dict[float, np.ndarray]:
         return self.__d
     
     @property
-    def D(self):
+    def D(self) -> Dict[float, np.ndarray]:
         return self.__D
 
 
-def wigner_d(j, beta):
+def wigner_d(j, beta) -> np.ndarray:
     dim = int(2 * j + 1)
     mat = np.zeros((dim, dim))
 
@@ -110,7 +110,7 @@ def wigner_d(j, beta):
     return mat
 
 
-def wigner_D(j, alpha, beta, gamma):
+def wigner_D(j, alpha, beta, gamma) -> np.ndarray:
     dim = int(2 * j + 1)
     mat = np.zeros((dim, dim), dtype='complex_')
 
@@ -127,7 +127,7 @@ def wigner_D(j, alpha, beta, gamma):
     return mat
 
 
-def wigner_D_from_d(wigner_d, alpha, gamma):
+def wigner_D_from_d(wigner_d, alpha, gamma) -> np.ndarray:
     '''Get the Wigner D matrix from the Wigner little d matrix'''
     dim = wigner_d.shape[0]
     mat = np.zeros((dim, dim), dtype='complex_')
@@ -141,7 +141,7 @@ def wigner_D_from_d(wigner_d, alpha, gamma):
     return mat
 
 
-def wigner_d_from_D(wigner_D, alpha, gamma):
+def wigner_d_from_D(wigner_D, alpha, gamma) -> np.ndarray:
     '''Get the Wigner little d matrix from the Wigner D matrix'''
     dim = wigner_D.shape[0]
     mat = np.zeros((dim, dim), dtype='complex_')
@@ -155,7 +155,7 @@ def wigner_d_from_D(wigner_D, alpha, gamma):
     return mat
 
 
-def wigner_d_dict(jmax, beta, jmin=0):
+def wigner_d_dict(jmax, beta, jmin=0) -> Dict[float, np.ndarray]:
     res = dict()
     jmin = max(jmin, 0)
     
@@ -164,7 +164,7 @@ def wigner_d_dict(jmax, beta, jmin=0):
     return res
 
 
-def wigner_D_dict(jmax, alpha, beta, gamma, jmin=0):
+def wigner_D_dict(jmax, alpha, beta, gamma, jmin=0) -> Dict[float, np.ndarray]:
     res = dict()
     jmin = max(jmin, 0)
 
@@ -173,7 +173,7 @@ def wigner_D_dict(jmax, alpha, beta, gamma, jmin=0):
     return res
 
 
-def wigner_D_dict_from_d_dict(wigner_d_dict, alpha, gamma):
+def wigner_D_dict_from_d_dict(wigner_d_dict: Dict[float, np.ndarray], alpha, gamma) -> Dict[float, np.ndarray]:
     '''Get a dictionary of wigner D matrices from a dictionary of wigner d matrices'''
     res = dict()
     for j in wigner_d_dict.keys():
@@ -181,7 +181,7 @@ def wigner_D_dict_from_d_dict(wigner_d_dict, alpha, gamma):
     return res
 
 
-def wigner_d_dict_from_D_dict(wigner_D_dict, alpha, gamma):
+def wigner_d_dict_from_D_dict(wigner_D_dict: Dict[float, np.ndarray], alpha, gamma) -> Dict[float, np.ndarray]:
     '''Get a dictionary of wigner D matrices from a dictionary of wigner d matrices'''
     res = dict()
     for j in wigner_D_dict.keys():
@@ -189,7 +189,7 @@ def wigner_d_dict_from_D_dict(wigner_D_dict, alpha, gamma):
     return res
 
 
-def wigner_d_component(j, m_prime, m, beta):
+def wigner_d_component(j, m_prime, m, beta) -> float:
     coefficient = math.sqrt(
         math.factorial(j + m_prime) * 
         math.factorial(j - m_prime) *
@@ -218,5 +218,5 @@ def wigner_d_component(j, m_prime, m, beta):
     return coefficient * matrix_element
 
 
-def wigner_D_component(j, m_prime, m, alpha, beta, gamma):
+def wigner_D_component(j, m_prime, m, alpha, beta, gamma) -> float:
     return np.exp(-1j * (m_prime * alpha + m * gamma)) * wigner_d_component(j, m_prime, m, beta)

@@ -2,27 +2,27 @@ import numpy as np
 import math
 
 
-def J_x(j):
+def J_x(j) -> np.ndarray:
     return (J_plus(j) + J_minus(j)) / 2
 
-def J_y(j):
+def J_y(j) -> np.ndarray:
     return (J_plus(j) - J_minus(j)) / 2j
 
-def J_z(j):
+def J_z(j) -> np.ndarray:
     return np.identity(int(2 * j + 1))
 
 
-def Jx(j):
+def Jx(j) -> np.ndarray:
     return J_x(j)
 
-def Jy(j):
+def Jy(j) -> np.ndarray:
     return J_y(j)
 
-def Jz(j):
+def Jz(j) -> np.ndarray:
     return J_z(j)
 
 
-def J_plus(j):
+def J_plus(j) -> np.ndarray:
     if int(2 * j + 1) != 2 * j + 1:
         raise ValueError(f'j must be a half integer. Found: {j}')
     
@@ -39,7 +39,7 @@ def J_plus(j):
 
     return mat
 
-def J_minus(j):
+def J_minus(j) -> np.ndarray:
     if int(2 * j + 1) != 2 * j + 1:
         raise ValueError(f'j must be a half integer. Found: {j}')
     
@@ -57,7 +57,7 @@ def J_minus(j):
     return mat
 
 
-def J_plus_component(j_prime, m_prime, j, m):
+def J_plus_component(j_prime, m_prime, j, m) -> float:
     '''
     Get the matrix element of the raising operator
     .. math::
@@ -68,7 +68,7 @@ def J_plus_component(j_prime, m_prime, j, m):
         return 0
     return J_plus_coefficient(j, m)
 
-def J_minus_component(j_prime, m_prime, j, m):
+def J_minus_component(j_prime, m_prime, j, m) -> float:
     '''
     Get the matrix element of the lowering operator
     .. math::
@@ -80,14 +80,14 @@ def J_minus_component(j_prime, m_prime, j, m):
     return J_minus_coefficient(j, m)
 
 
-def J_plus_coefficient(j, m):
+def J_plus_coefficient(j, m) -> float:
     '''
     Applies raising operator on the state :math:`|j, m \rangle`
     and returns the coefficient (:math:`\sqrt{(j + m) (j - m + 1)}`).
     '''
     return math.sqrt((j - m) * (j + m + 1))
 
-def J_minus_coefficient(j, m):
+def J_minus_coefficient(j, m) -> float:
     '''
     Applies lowering operator on the state :math:`|j, m \rangle`
     and returns the coefficient (:math:`\sqrt{(j - m) (j + m + 1)}`).
