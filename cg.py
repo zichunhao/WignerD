@@ -21,22 +21,28 @@ class ClebschGordanCoefficients:
     def __getitem__(self, *args) -> Union[pd.DataFrame, Dict[float, pd.DataFrame]]:
         if len(*args) == 2:
             j1, j2 = args[0]
+            if j1 > self.jmax or j2 > self.jmax:
+                self.set_jmax(max(j1, j2))
             return self.__cg_dict.get((j1, j2))
         
         elif len(*args) == 3:
             j1, j2, m = args[0]
-            tables = self.__cg_dict.get((j1, j2))
-            
-            if tables is None:
-                return None
-            
-            return tables.get(m)
+            if j1 > self.jmax or j2 > self.jmax:
+                self.set_jmax(max(j1, j2))
+            return self.__cg_dict.get((j1, j2)).get(m)
         
         else:
             raise IndexError(f'Invalid number of indices: {len(*args)}')
     
     def cg_matrix(self, j1, j2, m, return_indices=False) -> Union[Tuple[np.ndarray, np.ndarray, np.ndarray], np.ndarray]:
-        mat = self.__cg_dict[(j1, j2)][m]
+        cg_dict = self.__cg_dict.get((j1, j2))
+        if cg_dict is None:
+            self.update(max(j1, j2))
+        
+        mat = cg_dict.get(m)
+        
+        if mat is None:
+            return None
         
         if return_indices:
           return mat.to_numpy(), mat.index.to_numpy(), mat.columns.to_numpy()
@@ -56,6 +62,10 @@ class ClebschGordanCoefficients:
         '''
         cg_mats = []
         cg_indices = []
+        
+        if j1 > self.jmax or j2 > self.jmax:
+            self.set_jmax(max(j1, j2))
+        
         m_list = self.__cg_dict[(j1, j2)].keys()
         for m in m_list:
             mat, row, col = self.cg_matrix(j1, j2, m, return_indices=True)
@@ -98,11 +108,13 @@ class ClebschGordanCoefficients:
     def __str__(self) -> str:
         return self.__repr__()
     
-    def display_tables(self, jmin=None, jmax=None):
+    def display_all_tables(self, jmin=None, jmax=None):
         '''
         Displays all CG coefficients stored in the object
             If the bounds jmin and/or jmax are/is specified, display within the given bounds 
         '''
+        if jmax is not None and jmax > self.jmax:
+            self.set_jmax(jmax)
         
         for key, tables in self.__cg_dict.items():
             j1, j2 = key
@@ -119,7 +131,10 @@ class ClebschGordanCoefficients:
         return
     
     @property
-    def dicts(self):
+    def dicts(self) -> Dict[
+        Tuple[float, float],
+        Dict[float, pd.DataFrame]
+    ]:
         return self.__cg_dict
     
     @property
