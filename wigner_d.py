@@ -1,6 +1,7 @@
 import numpy as np
 import math
 from typing import Tuple, Dict
+from scipy.linalg import block_diag
 class WignerD:
     def __init__(self, jmax, alpha, beta, gamma):
         '''
@@ -29,6 +30,26 @@ class WignerD:
         except KeyError:
             self.set_jmax(j)
             return self.__d[j]
+        
+    def get_d_block(self, jmax=None) -> np.ndarray:
+        '''
+        Get the block diagonal form of the Wigner d matrix 
+            - up to `jmax` if specified
+            - the stored `jmax` otherwise.
+        '''
+        if jmax is not None:
+            return block_diag(*[self.d[j / 2] for j in range(int(2 * jmax + 1))])
+        return block_diag(*[self.d[j / 2] for j in range(int(2 * self.jmax + 1))])
+
+    def get_D_block(self, jmax=None) -> np.ndarray:
+        '''
+        Get the block diagonal form of the Wigner D matrix 
+            - up to `jmax` if specified
+            - the stored `jmax` otherwise.
+        '''
+        if jmax is not None:
+            return block_diag(*[self.D[j / 2] for j in range(int(2 * jmax + 1))])
+        return block_diag(*[self.D[j / 2] for j in range(int(2 * self.jmax + 1))])
     
     def set_jmax(self, jmax):
         if jmax <= self.__jmax:
@@ -94,6 +115,14 @@ class WignerD:
     @property
     def D(self) -> Dict[float, np.ndarray]:
         return self.__D
+    
+    @property
+    def d_block(self):
+        return self.get_d_block()
+    
+    @property
+    def D_block(self):
+        return self.get_D_block()
 
 
 def wigner_d(j, beta) -> np.ndarray:
@@ -108,6 +137,11 @@ def wigner_d(j, beta) -> np.ndarray:
             mat[row, col] += wigner_d_component(j, m_prime, m, beta)
 
     return mat
+
+def wigner_d_block_diag(jmax, beta) -> np.ndarray:
+    n = int(jmax * 2)
+    block = block_diag(*[wigner_d(i / 2, beta) for i in range(n)])
+    return block
 
 
 def wigner_D(j, alpha, beta, gamma) -> np.ndarray:
@@ -125,6 +159,12 @@ def wigner_D(j, alpha, beta, gamma) -> np.ndarray:
             )
 
     return mat
+
+
+def wigner_D_block_diag(jmax, beta) -> np.ndarray:
+    n = int(jmax * 2)
+    block = block_diag(*[wigner_d(i / 2, beta) for i in range(n)])
+    return block
 
 
 def wigner_D_from_d(wigner_d, alpha, gamma) -> np.ndarray:
