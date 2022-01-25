@@ -4,3 +4,4 @@ This is a `python` implementation of tools in addition of angular momentum in qu
 - [Angular momentum operators](angular_momentum/). 
 - [Clebsch-Gordan coefficients](cg/).
 - [Wigner D and d matrices](wigner_d/).
+- [Matrix element in the basis of hydrogen atom energy eigenstates](hydrogen/)
