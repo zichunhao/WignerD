@@ -1,5 +1,6 @@
 from scipy.special import sph_harm, assoc_laguerre
 import math
+FACTORIAL_LIMIT = 170  # the limit over which factorial cannot be converted to float
 
 def Y(l, m, theta, phi):
     '''
@@ -42,8 +43,12 @@ def R(n: int, l: int, r: float, a: float = 1) -> float:
         )
 
     norm = math.sqrt((2 / (n * a)) ** 3)
-    norm *= math.sqrt(math.factorial((n - l - 1)) /
-                      (2 * n) / math.factorial(n + l))
+    
+    if n - l - 1 <= FACTORIAL_LIMIT:
+        norm *= math.sqrt(math.factorial((n - l - 1)) / (2 * n) / math.factorial(n + l))
+    else:
+        norm /= math.sqrt((2 * n) * prod(n-l, n+l))
+    
     norm *= math.exp(- r / (n * a))
     norm *= (2*r / (n * a)) ** l
 
@@ -80,3 +85,10 @@ def psi(
         raise ValueError(f'm must be between -l and l. Found: m = {m}, l = {l}')
     
     return R(n, l, r, a) * Y(l, m, theta, phi)
+
+
+def prod(start, end):
+    p = 1
+    for i in range(start, end+1):
+        p *= i
+    return p
