@@ -1,3 +1,4 @@
+from typing import Callable
 import scipy.integrate as integrate
 import numpy as np
 import math
@@ -7,9 +8,11 @@ from .wave_func import Y
 
 
 def angular_matrix_element(
-    l1: int, m1: int, 
-    l2: int, m2: int, 
-    op=lambda theta, phi: 1
+    l1: int, 
+    m1: int, 
+    l2: int, 
+    m2: int, 
+    op: Callable = lambda theta, phi: 1
 ) -> float:
     '''
     Matrix element of an operator (written in the coordinate of theta and phi) <l1,m1|op(theta, phi)|l2,m2>

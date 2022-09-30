@@ -6,9 +6,9 @@ from typing import Dict
 from IPython.display import display
 
 def cg_coefficient(
-    j1, j2,
-    m1, m2,
-    j, m
+    j1: int, j2: int,
+    m1: int, m2: int,
+    j: int, m: int
 ):
     '''
     Compute the Clebsch-Gordan coefficient :math:`\langle j_1, j_2; m_1, m_2 | j_1, j_2; j, m \rangle`.
@@ -66,7 +66,7 @@ def cg_coefficient(
     return c * summation
 
 
-def cg_table(j1, j2, m) -> pd.DataFrame:
+def cg_table(j1: int, j2: int, m: int) -> pd.DataFrame:
     '''
     Returns the Clebsch-Gordan table given :math:`j_1, j_2, m`.
     '''
@@ -100,7 +100,12 @@ def cg_table(j1, j2, m) -> pd.DataFrame:
     return df
 
 
-def cg_matrix(j1, j2, m, return_indices=False):
+def cg_matrix(
+    j1: int, 
+    j2: int, 
+    m: int, 
+    return_indices: bool = False
+) -> np.ndarray:
     '''
     Returns the Clebsch-Gordan matrix given :math:`j_1, j_2, m` in matrix form.
     Returns row indices (`m1, m2`) and column indices (`j`) if `return_indices` is `True`.
@@ -113,7 +118,11 @@ def cg_matrix(j1, j2, m, return_indices=False):
     return table.to_numpy()
 
 
-def cg_tables_all_m(j1, j2, display_tables=False) -> Dict:
+def cg_tables_all_m(
+    j1: int, 
+    j2: int, 
+    display_tables: bool = False
+) -> Dict[str, np.ndarray]:
     '''
     Returns a dictionary of CClebsch-Gordan table given :math:`j_1, j_2`
     with all possible :math:`m`.

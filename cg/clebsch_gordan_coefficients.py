@@ -1,11 +1,11 @@
 import itertools
 import numpy as np
 import pandas as pd
-from typing import Dict, Tuple, Union, List
+from typing import Dict, Optional, Tuple, Union, List
 from .methods import *
 
 class ClebschGordanCoefficients:
-    def __init__(self, jmax):
+    def __init__(self, jmax: int):
         if int(2 * jmax) != 2 * jmax:
             jmax = int(2 * jmax) / 2
         
@@ -33,7 +33,13 @@ class ClebschGordanCoefficients:
         else:
             raise IndexError(f'Invalid number of indices: {len(*args)}')
     
-    def cg_matrix(self, j1, j2, m, return_indices=False) -> Union[Tuple[np.ndarray, np.ndarray, np.ndarray], np.ndarray]:
+    def cg_matrix(
+        self, 
+        j1: int, 
+        j2: int, 
+        m: int, 
+        return_indices: bool = False
+    ) -> Union[Tuple[np.ndarray, np.ndarray, np.ndarray], np.ndarray]:
         cg_dict = self.__cg_dict.get((j1, j2))
         if cg_dict is None:
             self.update(max(j1, j2))
@@ -48,7 +54,7 @@ class ClebschGordanCoefficients:
         
         return mat.to_numpy()
     
-    def cg_matrices_all_m(self, j1, j2) -> Tuple[
+    def cg_matrices_all_m(self, j1: int, j2: int) -> Tuple[
         List[np.ndarray], 
         List[Tuple[
             Tuple[float, float], # (j1, j2)
@@ -73,7 +79,7 @@ class ClebschGordanCoefficients:
         return cg_mats, cg_indices
     
     
-    def set_jmax(self, jmax):
+    def set_jmax(self, jmax: int):
         '''Updates jmax and appends larger CG coefficients'''
         if jmax <= self.__jmax:
             return
@@ -107,7 +113,11 @@ class ClebschGordanCoefficients:
     def __str__(self) -> str:
         return self.__repr__()
     
-    def display_all_tables(self, jmin=None, jmax=None):
+    def display_all_tables(
+        self, 
+        jmin: Optional[int] = None, 
+        jmax: Optional[int] = None
+    ) -> None:
         '''
         Displays all CG coefficients stored in the object
             If the bounds jmin and/or jmax are/is specified, display within the given bounds 

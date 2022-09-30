@@ -2,7 +2,12 @@ from scipy.special import sph_harm, assoc_laguerre
 import math
 FACTORIAL_LIMIT = 170  # the limit over which factorial cannot be converted to float
 
-def Y(l, m, theta, phi):
+def Y(
+    l: int, 
+    m: int, 
+    theta: float, 
+    phi: float
+) -> complex:
     '''
     Spherical harmonics in the convention of physics.
     
@@ -22,14 +27,20 @@ def Y(l, m, theta, phi):
     return sph_harm(m, l, phi, theta)
 
 
-def R(n: int, l: int, r: float, a: float = 1) -> float:
+def R(
+    n: int, 
+    l: int, 
+    r: float, 
+    a: float = 1
+) -> float:
     '''
     Radial wave function of the hydrogen atom :math:R_{n \ell}(r)
     
     :param n: principal quantum number.
     :param l: orbital quantum number.
     :param r: dimensionless radius.
-    :param a: bohr radius.
+    :param a: bohr radius, default to 1, 
+    in which case r is in atomic unit of length.
     
     :return: normalized radial wave function at r.
     '''
@@ -87,7 +98,7 @@ def psi(
     return R(n, l, r, a) * Y(l, m, theta, phi)
 
 
-def prod(start, end):
+def prod(start: int, end: int) -> int:
     p = 1
     for i in range(start, end+1):
         p *= i

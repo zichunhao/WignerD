@@ -1,3 +1,4 @@
+from typing import Callable
 import scipy.integrate as integrate
 import math
 import warnings
@@ -6,7 +7,8 @@ from .wave_func import R
 
 def radial_matrix_element(
     n1: int, l1: int, n2: int, l2: int, 
-    a: float = 1, op = lambda r: 1
+    a: float = 1, 
+    op: Callable = lambda r: 1
 ) -> float:
     '''
     Matrix element of an operator <n1,l1|op|n2,l2>
@@ -17,7 +19,8 @@ def radial_matrix_element(
     :param n2: principal quantum number of the ket.
     :param l2: orbital quantum number of the ket.
     :param op: operator (a function of `r`).
-    :param a: Bohr radius.
+    :param a: Bohr radius, default to 1, 
+    in which case the operators are in Bohr units.
     
     :return: the matrix element.
     '''
