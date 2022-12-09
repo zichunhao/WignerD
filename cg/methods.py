@@ -5,17 +5,14 @@ import pandas as pd
 from typing import Dict
 from IPython.display import display
 
-def cg_coefficient(
-    j1: int, j2: int,
-    m1: int, m2: int,
-    j: int, m: int
-):
-    '''
+
+def cg_coefficient(j1: int, j2: int, m1: int, m2: int, j: int, m: int):
+    """
     Compute the Clebsch-Gordan coefficient :math:`\langle j_1, j_2; m_1, m_2 | j_1, j_2; j, m \rangle`.
-    References: 
+    References:
         - Section 3.8 of J. J. Sakurai and Jim Napolitano, "Quantum Mechanics", 2nd ed., Cambridge, 2017
         - https://en.wikipedia.org/wiki/Table_of_Clebsch–Gordan_coefficients
-    '''
+    """
 
     if m != m1 + m2:
         return 0
@@ -67,17 +64,19 @@ def cg_coefficient(
 
 
 def cg_table(j1: int, j2: int, m: int) -> pd.DataFrame:
-    '''
+    """
     Returns the Clebsch-Gordan table given :math:`j_1, j_2, m`.
-    '''
+    """
     table = dict()
-    m1_list = np.linspace(-j1, j1, int(2*j1 + 1))
-    m2_list = np.linspace(-j2, j2, int(2*j2 + 1))
-    j_list = list(set(
-        abs(m1 + m2)
-        for m1, m2 in list(itertools.product(m1_list, m2_list))
-        if abs(m1 + m2) >= abs(m)  # constraints
-    ))
+    m1_list = np.linspace(-j1, j1, int(2 * j1 + 1))
+    m2_list = np.linspace(-j2, j2, int(2 * j2 + 1))
+    j_list = list(
+        set(
+            abs(m1 + m2)
+            for m1, m2 in list(itertools.product(m1_list, m2_list))
+            if abs(m1 + m2) >= abs(m)  # constraints
+        )
+    )
 
     for m1, m2 in list(itertools.product(m1_list, m2_list)):
         if m1 + m2 != m:
@@ -86,30 +85,27 @@ def cg_table(j1: int, j2: int, m: int) -> pd.DataFrame:
         value = []
         for j in j_list:
             coefficient = cg_coefficient(
-                j1=j1, j2=j2,
-                m=m1+m2,
+                j1=j1,
+                j2=j2,
+                m=m1 + m2,
                 j=j,
-                m1=m1, m2=m2,
+                m1=m1,
+                m2=m2,
             )
             value.append(coefficient)
         table[key] = value
 
-    df = pd.DataFrame.from_dict(table, orient='index', columns=j_list)
-    df.index.name = '(m1, m2)'
-    df.columns.name = 'j'
+    df = pd.DataFrame.from_dict(table, orient="index", columns=j_list)
+    df.index.name = "(m1, m2)"
+    df.columns.name = "j"
     return df
 
 
-def cg_matrix(
-    j1: int, 
-    j2: int, 
-    m: int, 
-    return_indices: bool = False
-) -> np.ndarray:
-    '''
+def cg_matrix(j1: int, j2: int, m: int, return_indices: bool = False) -> np.ndarray:
+    """
     Returns the Clebsch-Gordan matrix given :math:`j_1, j_2, m` in matrix form.
     Returns row indices (`m1, m2`) and column indices (`j`) if `return_indices` is `True`.
-    '''
+    """
     table = cg_table(j1, j2, m)
 
     if return_indices:
@@ -119,26 +115,24 @@ def cg_matrix(
 
 
 def cg_tables_all_m(
-    j1: int, 
-    j2: int, 
-    display_tables: bool = False
+    j1: int, j2: int, display_tables: bool = False
 ) -> Dict[str, np.ndarray]:
-    '''
+    """
     Returns a dictionary of CClebsch-Gordan table given :math:`j_1, j_2`
     with all possible :math:`m`.
-    '''
+    """
     tables = dict()
     m_max = j1 + j2
-    m_min = - m_max
+    m_min = -m_max
     m_list = np.linspace(m_min, m_max, int((m_max - m_min) + 1))
 
     for m in m_list:
         tables[m] = cg_table(j1, j2, m)
 
     if display_tables:
-        print(f'{j1 = }, {j2 = }')
+        print(f"{j1 = }, {j2 = }")
         for m, table in tables.items():
-            print(f'{m = }:')
+            print(f"{m = }:")
             display(table)
 
     return tables

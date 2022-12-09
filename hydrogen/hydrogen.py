@@ -2,16 +2,22 @@ import scipy.integrate as integrate
 import numpy as np
 import warnings
 import math
-warnings.filterwarnings('ignore')
+
+warnings.filterwarnings("ignore")
 from .wave_func import psi
 
+
 def hydrogen_matrix_element(
-    n1: int, l1: int, m1: int, 
-    n2: int, l2: int, m2: int,
-    op = lambda r, theta, phi: 1,
-    a: float = 1
+    n1: int,
+    l1: int,
+    m1: int,
+    n2: int,
+    l2: int,
+    m2: int,
+    op=lambda r, theta, phi: 1,
+    a: float = 1,
 ) -> float:
-    '''
+    """
     Matrix element of an operator <n1,l1|op|n2,l2>
     by integrating using the radial wave function.
 
@@ -25,16 +31,16 @@ def hydrogen_matrix_element(
     :param a: Bohr radius.
 
     :return: the matrix element.
-    '''
+    """
 
     def integrand(r, theta, phi):
         bra = np.conj(psi(n1, l1, m1, r, theta, phi, a=a))
         ket = psi(n2, l2, m2, r, theta, phi, a=a)
-        return bra * ket * op(r, theta, phi) * (r ** 2) * np.sin(theta)
-    
+        return bra * ket * op(r, theta, phi) * (r**2) * np.sin(theta)
+
     res, _ = integrate.nquad(
         lambda r, theta, phi: integrand(r, theta, phi),
-        [[0, math.inf], [0, math.pi], [0, 2*math.pi]]
+        [[0, math.inf], [0, math.pi], [0, 2 * math.pi]],
     )
-    
+
     return res
