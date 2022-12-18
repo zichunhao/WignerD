@@ -1,7 +1,6 @@
-from ctypes import Union
 import numpy as np
 import math
-from typing import Dict
+from typing import Dict, Union
 from scipy.linalg import block_diag
 
 
